@@ -1,0 +1,762 @@
+<!-- Licensed under a BSD license. See license.html for license -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Project Grafkom</title>
+    <style>
+    html, body {
+        margin: 0;
+        height: 100%;
+    }
+    #c {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+  </body>
+
+  <audio id=alif>
+    <source src=media/alif.ogg>
+  </audio>
+
+  <audio id=ba>
+    <source src=media/ba.ogg>
+  </audio>
+
+  <audio id=ta>
+    <source src=media/ta.ogg>
+  </audio>
+
+  <audio id=tsa>
+    <source src=media/tsa.ogg>
+  </audio>
+
+  <audio id=ja>
+    <source src=media/jim.ogg>
+  </audio>
+
+  <audio id=kha>
+    <source src=media/ha.ogg>
+  </audio>
+  <audio id=kho>
+    <source src=media/kha.ogg>
+  </audio>
+  <audio id=dal>
+    <source src=media/dal.ogg>
+  </audio>
+  <audio id=dzal>
+    <source src=media/dzal.ogg>
+  </audio>
+  <audio id=ra>
+    <source src=media/ra.ogg>
+  </audio>
+  <audio id=zai>
+    <source src=media/za.ogg>
+  </audio>
+  <audio id=sin>
+    <source src=media/sin.ogg>
+  </audio>
+  <audio id=syin>
+    <source src=media/syin.ogg>
+  </audio>
+  <audio id=shod>
+    <source src=media/shad.ogg>
+  </audio>
+  <audio id=dhod>
+    <source src=media/dhad.ogg>
+  </audio>
+  <audio id=tho>
+    <source src=media/tha.ogg>
+  </audio>
+  <audio id=dzho>
+    <source src=media/zha.ogg>
+  </audio>
+  <audio id=ain>
+    <source src=media/ain.ogg>
+  </audio>
+  <audio id=ghain>
+    <source src=media/ghain.ogg>
+  </audio>
+  <audio id=fa>
+    <source src=media/fa.ogg>
+  </audio>
+  <audio id=qa>
+    <source src=media/qaf.ogg>
+  </audio>
+  <audio id=kaf>
+    <source src=media/kaf.ogg>
+  </audio>
+  <audio id=lam>
+    <source src=media/lam.ogg>
+  </audio>
+  <audio id=mim>
+    <source src=media/mim.ogg>
+  </audio>
+  <audio id=nun>
+    <source src=media/nun.ogg>
+  </audio>
+  <audio id=waw>
+    <source src=media/wawu.ogg>
+  </audio>
+  <audio id=ha>
+    <source src=media/hha.ogg>
+  </audio>
+  <audio id=lamalif>
+    <source src=media/lam.ogg>
+    <source src=media/alif.ogg>
+  </audio>
+  <audio id=hamzah>
+    <source src=media/hamzah.ogg>
+  </audio>
+  <audio id=ya>
+    <source src=media/ya.ogg>
+  </audio>
+
+<!--   <script src="threex.domevents.js"></script> -->
+<!-- <script src="OBJLoader2.js"></script>
+<script src="three.module.js"></script>
+<script src="OrbitControls.js"></script>
+<script src="MTLLoader.js"></script>
+<script src="MtlObjBridge.js"></script> -->
+
+<script type="module">
+  // import {threex} from'https://raw.githubusercontent.com/jeromeetienne/threex.domevents/master/threex.domevents.js';
+import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/build/three.module.js';
+import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/controls/OrbitControls.js';
+import {OBJLoader2} from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/OBJLoader2.js';
+import {MTLLoader} from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/MTLLoader.js';
+import {MtlObjBridge} from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
+
+var test;
+function main() {
+//Sound function
+var sounds = {
+   65 : 'alif',
+   66 : 'ba',
+   67 : 'ta',
+   68 : 'tsa',
+   69 : 'ja',
+   70 : 'kha',
+   71 : 'kho',
+   72 : 'dal',
+   73 : 'dzal',
+   74 : 'ra',
+   75 : 'zai',
+   76 : 'sin',
+   77 : 'syin',
+   78 : 'shod',
+   79 : 'dhod',
+   80 : 'tho',
+   81 : 'dzho',
+   82 : 'ain',
+   83 : 'ghain',
+   84 : 'fa',
+   85 : 'qa',
+   86 : 'kaf',
+   87 : 'lam',
+   88 : 'mim',
+   89 : 'nun',
+   90 : 'waw',
+   49 : 'ha',
+   50 : 'lamalif',
+   51 : 'hamzah',
+   52 : 'ya',
+   // 84 : 'ta',
+   // 83 : 'tsa',
+   // 74 : 'ja',
+
+};
+document.onkeydown = function(e) {
+    var soundId = sounds[e.keyCode];
+    if (soundId) document.getElementById(soundId).play();
+    else console.log("key not mapped : code is", e.keyCode);
+}
+
+  const canvas = document.querySelector('#c');
+  const renderer = new THREE.WebGLRenderer({canvas});
+  const fov = 45;
+  const aspect = 2;  // the canvas default
+  const near = 0.1;
+  const far = 100;
+  const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+  camera.position.set(0, 40, 70);
+  const controls = new OrbitControls(camera, canvas);
+  controls.maxDistance = 75;
+  controls.update();
+
+  // const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+
+  // domEvents.addEventListener(objLoader3, 'click', event =>{
+  //   document.getElementById(ta).play();
+  // });
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xFFFFFF);
+ 
+   {
+    const planeSize = 40;
+
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyFEu555XVNBr2w3NVWZRmc3Ah8HifXKDnTHbCINPlPnLXaelTVg&s');
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.magFilter = THREE.NearestFilter;
+    const repeats = planeSize / 2;
+    texture.repeat.set(repeats, repeats);
+
+    const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
+    const planeMat = new THREE.MeshPhongMaterial({
+      map: texture,
+      side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(planeGeo, planeMat);
+    mesh.rotation.x = Math.PI * -.5;
+    mesh.position.set(0,0,0);
+    scene.add(mesh);
+
+  }
+
+  {
+    const skyColor = 0xB1E1FF;  // light blue
+    const groundColor = 0xB97A20;  // brownish orange
+    const intensity = 1;
+    const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+    scene.add(light);
+  }
+
+  {
+    const color = 0xFFFFFF;
+    const intensity = 1;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(5, 10, 2);
+    scene.add(light);
+    scene.add(light.target);
+  }
+
+  
+  	//MASUKIN OBJEK
+    const mtlLoader = new MTLLoader();
+    mtlLoader.load('Alif2.mtl', (mtlParseResult) => {
+      const objLoader = new OBJLoader2();
+      const materials =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader.addMaterials(materials);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader.load('Alif2.obj', (root) => {
+      	test = root;
+        scene.add(root);
+        test.position.z =-20;
+        test.position.x = 10;
+      });
+    });
+
+    const mtlLoader2 = new MTLLoader();
+    mtlLoader2.load('Ba.mtl', (mtlParseResult) => {
+      const objLoader2 = new OBJLoader2();
+      const materials2 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader2.addMaterials(materials2);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader2.load('Ba.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z =-19;
+        test.position.x = 10;
+      });
+    });
+
+    const mtlLoader3 = new MTLLoader();
+    const objLoader3 = new OBJLoader2();
+    mtlLoader3.load('Ta.mtl', (mtlParseResult) => {
+      
+      const materials3 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader3.addMaterials(materials3);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader3.load('Ta.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -19;
+        test.position.x = 10;
+      });
+    });
+
+    const mtlLoader4 = new MTLLoader();
+    const objLoader4 = new OBJLoader2();
+    mtlLoader4.load('Tsa.mtl', (mtlParseResult) => {
+      const materials4 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader4.addMaterials(materials4);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader4.load('Tsa.obj', (root) => {
+      	test = root;
+        scene.add(root);
+        test.position.z = -16;
+        test.position.x = 7;
+        test.position.y = 1;
+      });
+    });
+
+    const mtlLoader5 = new MTLLoader();
+    const objLoader5 = new OBJLoader2();
+    mtlLoader5.load('Ja.mtl', (mtlParseResult) => {
+      const materials5 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader5.addMaterials(materials5);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader5.load('Ja.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -16;
+        test.position.x = 6.5;
+      });
+    });
+
+    const mtlLoader6 = new MTLLoader();
+    const objLoader6 = new OBJLoader2();
+    mtlLoader6.load('Kha.mtl', (mtlParseResult) => {
+      const materials6 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader6.addMaterials(materials6);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader6.load('Kha.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -16;
+        test.position.x = 5.5;
+      });
+    });
+
+    const mtlLoader7 = new MTLLoader();
+    const objLoader7 = new OBJLoader2();
+    mtlLoader7.load('Kha.mtl', (mtlParseResult) => {
+      const materials7 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader7.addMaterials(materials7);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader7.load('Kho.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -16;
+        test.position.x = 4.5;
+      });
+    });
+
+    const mtlLoader8 = new MTLLoader();
+    const objLoader8 = new OBJLoader2();
+    mtlLoader8.load('Dal.mtl', (mtlParseResult) => {
+      const materials8 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader8.addMaterials(materials8);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader8.load('Dal.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -16;
+        test.position.x = 4;
+      });
+    });
+
+    const mtlLoader9 = new MTLLoader();
+    const objLoader9 = new OBJLoader2();
+    mtlLoader9.load('Dzal.mtl', (mtlParseResult) => {
+      const materials9 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader9.addMaterials(materials9);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader9.load('Dzal.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -16;
+        test.position.x = 3;
+      });
+    });
+
+    const mtlLoader10 = new MTLLoader();
+    const objLoader10 = new OBJLoader2();
+    mtlLoader10.load('Ra.mtl', (mtlParseResult) => {
+      const materials10 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader10.addMaterials(materials10);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader10.load('Ra.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -8;
+        test.position.x = 40;
+      });
+    });
+
+const mtlLoader11 = new MTLLoader();
+    const objLoader11 = new OBJLoader2();
+    mtlLoader11.load('Zai.mtl', (mtlParseResult) => {
+      const materials11 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader11.addMaterials(materials11);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader11.load('Zai.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -8;
+        test.position.x = 39;
+      });
+    });
+
+    const mtlLoader12 = new MTLLoader();
+    const objLoader12 = new OBJLoader2();
+    mtlLoader12.load('Sa.mtl', (mtlParseResult) => {
+      const materials12 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader12.addMaterials(materials12);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader12.load('Sa.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -6.5;
+        test.position.x = 15;
+      });
+    });
+
+    const mtlLoader13 = new MTLLoader();
+    const objLoader13 = new OBJLoader2();
+    mtlLoader13.load('Sya.mtl', (mtlParseResult) => {
+      const materials13 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader13.addMaterials(materials13);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader13.load('Sya.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -5.5;
+        test.position.x = 14;
+      });
+    });
+
+    const mtlLoader14 = new MTLLoader();
+    const objLoader14 = new OBJLoader2();
+    mtlLoader14.load('Shod.mtl', (mtlParseResult) => {
+      const materials14 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader14.addMaterials(materials14);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader14.load('Shod.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -6.5;
+        test.position.x = 13;
+      });
+    });
+
+    const mtlLoader15 = new MTLLoader();
+    const objLoader15 = new OBJLoader2();
+    mtlLoader15.load('Dhod.mtl', (mtlParseResult) => {
+      const materials15 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader15.addMaterials(materials15);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader15.load('Dhod.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = -6.5;
+        test.position.x = 12;
+      });
+    });
+
+    const mtlLoader16 = new MTLLoader();
+    const objLoader16 = new OBJLoader2();
+    mtlLoader16.load('Tho.mtl', (mtlParseResult) => {
+      const materials16 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader16.addMaterials(materials16);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader16.load('Tho.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 2;
+        test.position.x = 22;
+      });
+    });
+
+    const mtlLoader17 = new MTLLoader();
+    const objLoader17 = new OBJLoader2();
+    mtlLoader17.load('Dzho.mtl', (mtlParseResult) => {
+      const materials17 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader17.addMaterials(materials17);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader17.load('Dzho.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 2.7;
+        test.position.x = 20;
+      });
+    });
+
+    const mtlLoader18 = new MTLLoader();
+    const objLoader18 = new OBJLoader2();
+    mtlLoader18.load('Ain.mtl', (mtlParseResult) => {
+      const materials18 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader18.addMaterials(materials18);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader18.load('Ain.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 2.5;
+        test.position.x = 19.3;
+      });
+    });
+  
+    const mtlLoader19 = new MTLLoader();
+    const objLoader19 = new OBJLoader2();
+    mtlLoader19.load('Ghin.mtl', (mtlParseResult) => {
+      const materials19 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader19.addMaterials(materials19);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader19.load('Ghin.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 2.5;
+        test.position.x = 17.3;
+      });
+    });
+
+    const mtlLoader20 = new MTLLoader();
+    const objLoader20 = new OBJLoader2();
+    mtlLoader20.load('Fa.mtl', (mtlParseResult) => {
+      const materials20 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader20.addMaterials(materials20);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader20.load('Fa.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 2.5;
+        test.position.x = 15.5;
+      });
+    });
+
+    const mtlLoader21 = new MTLLoader();
+    const objLoader21 = new OBJLoader2();
+    mtlLoader21.load('Qaf.mtl', (mtlParseResult) => {
+      const materials21 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader21.addMaterials(materials21);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader21.load('Qaf.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 3.5;
+        test.position.x = 13;
+      });
+    });
+
+    const mtlLoader22 = new MTLLoader();
+    const objLoader22 = new OBJLoader2();
+    mtlLoader22.load('Kaf.mtl', (mtlParseResult) => {
+      const materials22 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader22.addMaterials(materials22);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader22.load('Kaf.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 15;
+        test.position.x = 18;
+      });
+    });
+
+    const mtlLoader23 = new MTLLoader();
+    const objLoader23 = new OBJLoader2();
+    mtlLoader23.load('Lam.mtl', (mtlParseResult) => {
+      const materials23 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader23.addMaterials(materials23);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader23.load('Lam.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 21.6;
+        test.position.x = 11.5;
+      });
+    });
+
+    const mtlLoader24 = new MTLLoader();
+    const objLoader24 = new OBJLoader2();
+    mtlLoader24.load('Mim.mtl', (mtlParseResult) => {
+      const materials24 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader24.addMaterials(materials24);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader24.load('Mim.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 17;
+        test.position.x = 11;
+      });
+    });
+
+    const mtlLoader25 = new MTLLoader();
+    const objLoader25 = new OBJLoader2();
+    mtlLoader25.load('Nun.mtl', (mtlParseResult) => {
+      const materials25 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader25.addMaterials(materials25);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader25.load('Nun.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 18;
+        test.position.x = 0;
+      });
+    });
+
+
+    const mtlLoader26 = new MTLLoader();
+    const objLoader26 = new OBJLoader2();
+    mtlLoader26.load('Waw.mtl', (mtlParseResult) => {
+      const materials26 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader26.addMaterials(materials26);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader26.load('Waw.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 18;
+        test.position.x = 0;
+
+      });
+    });
+
+    const mtlLoader27 = new MTLLoader();
+    const objLoader27 = new OBJLoader2();
+    mtlLoader27.load('Ha.mtl', (mtlParseResult) => {
+      const materials27 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader27.addMaterials(materials27);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader27.load('Ha.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 4;
+        test.position.x = -12;
+      });
+    });
+
+    const mtlLoader28 = new MTLLoader();
+    const objLoader28 = new OBJLoader2();
+    mtlLoader28.load('Lamalif.mtl', (mtlParseResult) => {
+      const materials28 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader28.addMaterials(materials28);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader28.load('Lamalif.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 7;
+        test.position.x = -16;
+      });
+    });
+
+     const mtlLoader29 = new MTLLoader();
+    const objLoader29 = new OBJLoader2();
+    mtlLoader29.load('Hamzah.mtl', (mtlParseResult) => {
+      const materials29 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader29.addMaterials(materials29);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader29.load('Hamzah.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 13;
+        test.position.x = 15;
+      });
+    });
+
+    const mtlLoader30 = new MTLLoader();
+    const objLoader30 = new OBJLoader2();
+    mtlLoader30.load('Ya.mtl', (mtlParseResult) => {
+      const materials30 =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader30.addMaterials(materials30);
+
+      //materials.Material.side = THREE.DoubleSide;
+      
+      objLoader30.load('Ya.obj', (root) => {
+        test = root;
+        scene.add(root);
+        test.position.z = 34;
+        test.position.x = 10;
+        test.onclick = function() {
+          test.position.z = 40;
+        };
+      });
+    });
+
+  //SAMPE SINI
+
+  function resizeRendererToDisplaySize(renderer) {
+    const canvas = renderer.domElement;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const needResize = canvas.width !== width || canvas.height !== height;
+    if (needResize) {
+      renderer.setSize(width, height, false);
+    }
+    return needResize;
+  }
+
+  function render() {
+
+    if (resizeRendererToDisplaySize(renderer)) {
+      const canvas = renderer.domElement;
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+    }
+
+    renderer.render(scene, camera);
+
+    requestAnimationFrame(render);
+  }
+
+  requestAnimationFrame(render);
+}
+
+main();
+</script>
+</html>
